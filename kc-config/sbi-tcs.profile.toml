@@ -1,0 +1,44 @@
+# sbi-tcs wiki profile — knowledge base for the SBI/TCS domain triage agent.
+#
+# Target wiki = ../wiki/ (the wiki/ folder in this repo).
+# Sources today: the dap-tcs-sbi knowledge-mesh wiki (seed). Future: resolved
+# tickets, incidents, patterns, and per-service runbooks written by the triage agent.
+
+name        = "sbi-tcs"
+description = "SBI/TCS domain knowledge base — architectures, operations playbooks, patterns, incidents, resolved tickets, services"
+
+# Page paths.
+# {type} is the schema page type (architecture / pattern / incident /
+# resolved_ticket / service). Folder layout:
+#   wiki/architectures/<slug>.md
+#   wiki/patterns/<slug>.md
+#   wiki/incidents/<slug>.md
+#   wiki/resolved_tickets/<slug>.md
+#   wiki/services/<slug>.md
+# EXCEPTION: the `operations` type is already plural and maps to
+#   wiki/operations/<slug>.md (not "operationss").
+page_path_template = "wiki/{type}s/{slug}.md"
+
+schema_file   = "./sbi-tcs.schema.yaml"
+schema_format = "dn-wiki-types-yaml"
+
+[frontmatter.required]
+title   = "string"
+type    = "enum"
+created = "date"
+updated = "date"
+
+[contribution]
+# worktree mode — each kc run creates an isolated git worktree at
+# `${worktree_root}/contrib-<timestamp>-<source_id>`. Multiple agents can run
+# kc concurrently without git-lock conflicts. `kc merge-index` consolidates
+# contrib worktrees back into the current branch on demand.
+mode            = "worktree"
+worktree_root   = "../.kc-worktrees"
+branch_template = "contrib/kc-{timestamp}-{source_id}"
+auto_push       = false
+
+[slug]
+case       = "kebab"
+allow_dots = false
+max_length = 100

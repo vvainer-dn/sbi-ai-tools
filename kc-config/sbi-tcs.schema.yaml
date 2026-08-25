@@ -1,0 +1,162 @@
+# GLOBAL RULES FOR ALL PAGE TYPES
+#
+# 1. `## Source` is MANDATORY on every page and must name the REAL source(s) that
+#    actually informed it. The seed pages of this wiki derive from a recorded ToI
+#    session and its written synthesis (an HTML knowledge doc) — for those, the
+#    primary source is that doc / recording, cited by name. Pages written later by
+#    the triage agent cite the ticket, incident channel, PR, or log evidence they
+#    came from. GitHub file/folder links (form
+#    `https://github.com/<org>/<repo>/blob|tree/<branch>/<path>`) are ENCOURAGED as
+#    supporting evidence for any claim verified against the code. When multiple
+#    sources contributed, list each. Never cite a source you did not actually consult.
+#
+# 2. Use `[[wikilinks]]` ONLY for other pages in THIS vault (the filename, no extension,
+#    e.g. `[[sbi-control-data-plane]]`). Never for external repos — write those as
+#    markdown URLs: `[drivenets/dap](https://github.com/drivenets/dap)`.
+#
+# 3. `evidence` frontmatter lists the actual files consulted, as
+#    `<org>/<repo>:<repo-relative-path>` (e.g.
+#    `drivenets/dap:dap-workspace/apps/sbi/edge/sbi-controller`).
+#
+# 4. Do not embed images. Represent a diagram as prose, a table, or ASCII arrow
+#    notation (`A -> B -> C`) instead — images are invisible to grep/search retrieval.
+#
+# 5. Say "current state" vs "session-era / historical" vs "open question" explicitly
+#    when a claim's status matters. Do not silently upgrade an inferred claim to a
+#    verified one. An honest `UNRESOLVED (candidate: ...)` beats a confident guess.
+#
+# Six page types: `architecture` and `operations` (seeded from the dap-tcs-sbi
+# knowledge-mesh wiki), plus `pattern`, `incident`, `resolved_ticket`, and `service`
+# (filled over time by the SBI triage agent, adopted from the dap-devops schema).
+
+architecture:
+  description: >
+    A page describing one architectural facet of SBI/TCS — a boundary, a request/event
+    flow, a subsystem, or a cross-cutting decision (messaging, secrets, HA...). The
+    default type here; most seed pages are this type.
+  build:
+    guidance: >
+      Overview is one paragraph: what this facet is and where it sits in the SBI/TCS
+      system. Components lists the concrete moving parts (services, topics, protocols)
+      involved. Flow (when relevant) describes the request/event sequence as prose,
+      a table, or arrow notation — never an embedded image. Decisions (when relevant)
+      captures a trade-off already made, with its rationale, not just its outcome. Open
+      Questions lists what remains unconfirmed or environment-dependent — be honest
+      rather than filling the gap with a plausible guess. Source is mandatory. Link
+      every related page in See Also with [[wikilinks]].
+    sections:
+      - Overview
+      - Components
+      - Flow
+      - Decisions
+      - Open Questions
+      - Source
+      - See Also
+
+operations:
+  description: >
+    A page describing how to triage or recover from a class of failure — the debugging
+    playbook and failure-mode analysis. This wiki keeps all such content on ONE
+    consolidated page rather than one page per symptom.
+  build:
+    guidance: >
+      Symptoms lists the observable signals a human or agent would actually see. Triage
+      Sequence is the ordered set of checks that isolates which boundary failed, from
+      caller to device. Failure Modes is a table: failure mode / effect / detection /
+      recovery / criticality. Use qualitative criticality (Low/Medium/High/Critical)
+      when there is no production occurrence/detection-rate data yet, and say so rather
+      than inventing an RPN score. Prevention captures the change that stops the same
+      class of incident next time. Link every related page in See Also with
+      [[wikilinks]].
+    sections:
+      - Symptoms
+      - Triage Sequence
+      - Failure Modes
+      - Prevention
+      - Source
+      - See Also
+
+pattern:
+  description: >
+    A recurring symptom → root cause → fix recipe distilled from real triage work.
+    Patterns are the wikilink graph hub — link them from every incident, resolved
+    ticket, and service page they explain.
+  build:
+    guidance: >
+      Symptom is the observable signal, quoted as a human or agent would actually see
+      it (error text, metric shape, log line). Root Cause explains the mechanism, not
+      just the component. Fix is the ordered, repeatable set of steps. Prevention is
+      the durable change that stops recurrence. Seen In lists the incidents/tickets
+      where this pattern occurred, as [[wikilinks]]. Affects lists the touched
+      services/components, as [[wikilinks]] where a service page exists.
+    sections:
+      - Symptom
+      - Root Cause
+      - Fix
+      - Prevention
+      - Seen In
+      - Affects
+      - Source
+      - See Also
+
+incident:
+  description: >
+    One page per real incident (production or staging) the triage agent handled or
+    analyzed. Slug format: <topic>-<YYYY-MM-DD>.
+  build:
+    guidance: >
+      Symptoms lists what was observed, with timestamps where known. Root Cause is the
+      confirmed mechanism (mark UNRESOLVED with candidates if not confirmed). Solution
+      Steps is what was actually done, in order. Verification is how recovery was
+      proven. Prevention is the follow-up that stops recurrence — link a [[pattern]]
+      page when one was extracted. Source cites the incident channel, ticket, and log
+      evidence actually consulted.
+    sections:
+      - Symptoms
+      - Root Cause
+      - Solution Steps
+      - Verification
+      - Prevention
+      - Source
+      - See Also
+
+resolved_ticket:
+  description: >
+    One page per Jira ticket (AR-XXXXX) resolved in the SBI/TCS domain. Slug format:
+    ar-<NNNNN>.
+  build:
+    guidance: >
+      Summary is what the ticket asked and what shipped, in two or three sentences.
+      Root Cause explains why the problem existed. Fix describes the change made.
+      Files Changed lists the repo paths touched. Affected Components lists the
+      services/components, as [[wikilinks]] where a service page exists. References
+      links the Jira ticket and PR(s) as markdown URLs.
+    sections:
+      - Summary
+      - Root Cause
+      - Fix
+      - Files Changed
+      - Affected Components
+      - References
+      - Source
+      - See Also
+
+service:
+  description: >
+    One page per SBI/TCS service or component (sbi-controller, message-bus,
+    sbi-orchestrator, tcs-subscriptions, tcs-api, fs-daemon, fs-publisher,
+    jmscollector, lweopm, ...). Slug = the service's real name in kebab-case.
+  build:
+    guidance: >
+      Overview is what the service does and its place in the SBI/TCS flow. Where It
+      Runs states cloud vs edge (DCU), deployment shape, and key dependencies.
+      Ownership names the owning team/area. Failure Modes is an APPEND-ONLY running
+      list — every incident or resolved ticket that touched this service ADDS an
+      entry ([[wikilink]] to the incident/ticket page); never drop earlier entries.
+    sections:
+      - Overview
+      - Where It Runs
+      - Ownership
+      - Failure Modes
+      - Source
+      - See Also
